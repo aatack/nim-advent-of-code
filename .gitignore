@@ -1,0 +1,8 @@
+# Helpers
+main.bat
+
+# Entry point
+main.nim
+
+# Binaries
+*.exe
