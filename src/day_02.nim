@@ -30,8 +30,18 @@ iterator parseData*(data: string): Command =
   for line in data.splitLines:
     yield parseCommand(line)
 
-proc partOne*(data: string): int =
-  # TODO: change back to func
+func partOne*(data: string): int =
+  var
+    horizontal = 0
+    depth = 0
+
   for command in parseData(data):
-    discard
-  0
+    case command.direction:
+      of down:
+        depth += command.magnitude
+      of up:
+        depth -= command.magnitude
+      of forward:
+        horizontal += command.magnitude
+  
+  result = horizontal * depth
