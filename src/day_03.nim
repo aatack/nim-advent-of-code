@@ -12,6 +12,11 @@ func countToBool(count: int): bool =
   else:
     raise newException(Exception, "Equal number of 0s and 1s")
 
+func reverse[T](sequence: seq[T]): seq[T] =
+  result = @[]
+  for i in 1..sequence.len:
+    result.add(sequence[sequence.len - i])
+
 func mostCommonBits(data: seq[string]): Binary =
   var
     differences: seq[int]
@@ -29,12 +34,7 @@ func mostCommonBits(data: seq[string]): Binary =
         else:
           raise newException(Exception, "Invalid bit: " & bit)
 
-  var
-    mostCommon = differences.map(proc (count: int): bool = countToBool(count))
-    
-  result = @[]
-  for i in 1..mostCommon.len:
-    result.add(mostCommon[mostCommon.len - i])
+  result = reverse(differences.map(countToBool))
 
 func fromBinary(binary: Binary): int =
   var
