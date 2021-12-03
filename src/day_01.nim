@@ -16,9 +16,6 @@ func countIncreases(values: seq[int]): int =
     initialised = true
     previous = current
 
-func depthMeasurementIncreases*(inputData: string): int =
-  countIncreases(toSeq(parseInts(inputData)))
-
 type
   UnorderedBuffer[I: static[int], T] = ref object
     values: array[I, T]
@@ -53,8 +50,11 @@ iterator summedWindows[I: static[int]](values: seq[int]): int =
   for window in windows[I, int](values):
     yield sum(window)
 
-func groupedDepthMeasurementIncreases*(inputData: string): int =
+func partTwo*(data: string): int =
   var
-    values = toSeq(parseInts(inputData))
+    values = toSeq(parseInts(data))
 
   result = countIncreases(toSeq(summedWindows[3](values)))
+
+func partOne*(data: string): int =
+  countIncreases(toSeq(parseInts(data)))
