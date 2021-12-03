@@ -1,4 +1,4 @@
-import strutils, sequtils
+import strutils, sequtils, math
 
 iterator parseInts(inputData: string): int =
   for line in inputData.split(Newlines):
@@ -25,19 +25,19 @@ type
     current: int
     full: bool
 
-method store[I, T](this: UnorderedBuffer[I, T], value: T): void {.base.} =
+proc store[I, T](this: UnorderedBuffer[I, T], value: T): void =
   this.values[this.current] = value
   inc this.current
   if this.current == I:
     this.current = 0
     this.full = true
 
-method get[I, T](this: UnorderedBuffer[I, T]): array[I, T] {.base.} =
+proc get[I, T](this: UnorderedBuffer[I, T]): array[I, T] =
   let copy = this.values
   result = copy
 
-method full(this: UnorderedBuffer): bool =
-  this.full
+proc full(this: UnorderedBuffer): bool =
+  result = this.full
 
 iterator windows[I: static[int], T](values: seq[T]): array[I, T] =
   var
