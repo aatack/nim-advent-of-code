@@ -45,3 +45,21 @@ func partOne*(data: string): int =
         horizontal += command.magnitude
   
   result = horizontal * depth
+
+func partTwo*(data: string): int =
+  var
+    aim = 0
+    horizontal = 0
+    depth = 0
+
+  for command in parseData(data):
+    case command.direction:
+      of down:
+        aim += command.magnitude
+      of up:
+        aim -= command.magnitude
+      of forward:
+        horizontal += command.magnitude
+        depth += aim * command.magnitude
+  
+  result = horizontal * depth
