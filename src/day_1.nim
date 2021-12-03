@@ -54,7 +54,6 @@ iterator summedWindows[I: static[int]](values: seq[int]): int =
     yield sum(window)
 
 func groupedDepthMeasurementIncreases*(inputData: string): int =
-  # TODO: change back to func
   var
     values = toSeq(parseInts(inputData))
 
