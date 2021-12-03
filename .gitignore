@@ -6,3 +6,6 @@ main.nim
 
 # Binaries
 *.exe
+
+# Data for each day
+data/
