@@ -38,3 +38,12 @@ method get[I, T](this: UnorderedBuffer[I, T]): array[I, T] {.base.} =
 
 method full(this: UnorderedBuffer): bool =
   this.full
+
+iterator windows[I: static[int], T](values: seq[T]): array[I, T] =
+  var
+    buffer = UnorderedBuffer[I, T]()
+
+  for value in values:
+    buffer.store(value)
+    if buffer.full:
+      yield buffer.get
