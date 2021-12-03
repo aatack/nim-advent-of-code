@@ -26,7 +26,7 @@ func parseCommand(line: string): Command =
     magnitude: parseInt(segments[1])
   )
 
-iterator parseData*(data: string): Command =
+iterator parseData(data: string): Command =
   for line in data.splitLines:
     yield parseCommand(line)
 
