@@ -47,3 +47,15 @@ iterator windows[I: static[int], T](values: seq[T]): array[I, T] =
     buffer.store(value)
     if buffer.full:
       yield buffer.get
+
+iterator summedWindows[I: static[int]](values: seq[int]): int =
+  # TODO: figure out why we can't just map over this
+  for window in windows[I, int](values):
+    yield sum(window)
+
+func groupedDepthMeasurementIncreases*(inputData: string): int =
+  # TODO: change back to func
+  var
+    values = toSeq(parseInts(inputData))
+
+  result = countIncreases(toSeq(summedWindows[3](values)))
