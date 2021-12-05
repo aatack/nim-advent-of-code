@@ -35,12 +35,7 @@ func mostCommonBits(numbers: seq[Binary]): Binary =
 
   func countToBool(count: int): bool =
     # Positive difference means there are more ones; mapped to true
-    if count < 0:
-      result = false
-    elif count > 0:
-      result = true
-    else:
-      raise newException(Exception, "Equal number of 0s and 1s")
+    return count >= 0
 
   result = counts.map(countToBool)
 
@@ -61,27 +56,6 @@ func toDecimal(number: Binary): int =
 
   result = total
 
-func argmax(values: seq[int]): int =
-  var
-    currentMax = low(int)
-    currentIndex = 0
-
-  for index, value in values:
-    if value > currentMax:
-      currentMax = value
-      currentIndex = index
-
-  return currentIndex
-
-func sharedLeadingBits(number: Binary): (Binary) -> int =
-  func inner(candidate: Binary): int =
-    for i, (left, right) in zip(number, candidate):
-      if left != right:
-        return i
-    return number.len
-
-  result = inner
-
 func partOne*(data: string): int =
   var
     mostCommon = mostCommonBits(parseData(data))
@@ -91,10 +65,26 @@ func partOne*(data: string): int =
 func partTwo*(data: string): int =
   var
     numbers = parseData(data)
-    mostCommon = mostCommonBits(numbers)
-    leastCommon = invert(mostCommon)
+    mostCommonMatches = numbers
+    leastCommonMatches = numbers
+    mostCommon: Binary
+    leastCommon: Binary
+    index = 0
 
-  result = (
-    toDecimal(numbers[argmax(numbers.map(sharedLeadingBits(mostCommon)))]) *
-    toDecimal(numbers[argmax(numbers.map(sharedLeadingBits(leastCommon)))])
-  )
+  while mostCommonMatches.len > 1:
+    mostCommon = mostCommonBits(mostCommonMatches)
+    mostCommonMatches = mostCommonMatches.filter(
+      (number) => number[index] == mostCommon[index]
+    )
+    inc index
+
+  index = 0
+
+  while leastCommonMatches.len > 1:
+    leastCommon = mostCommonBits(leastCommonMatches).invert
+    leastCommonMatches = leastCommonMatches.filter(
+      (number) => number[index] == leastCommon[index]
+    )
+    inc index
+
+  return mostCommonMatches[0].toDecimal * leastCommonMatches[0].toDecimal
