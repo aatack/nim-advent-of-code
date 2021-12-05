@@ -1,59 +1,60 @@
-import strutils, sequtils, parseutils
-
-func parseValues(data: string): seq[int] =
-  # Parse the textual list of binary values to integers
-  var
-    lines = data.splitLines
-    values: seq[int]
-
-  newSeq(values, lines.len)
-  for i, line in lines:
-    discard parseBin(line, values[i])
-
-  result = values
+import strutils, sequtils
 
 type
   Binary = seq[bool] # Little-endian
 
-func countToBool(count: int): bool =
-  # Positive difference means there are more ones; mapped to true
-  if count < 0:
-    result = false
-  elif count > 0:
-    result = true
-  else:
-    raise newException(Exception, "Equal number of 0s and 1s")
-
-func reverse[T](sequence: seq[T]): seq[T] =
+func parseBinary(line: string): Binary =
   result = @[]
-  for i in 1..sequence.len:
-    result.add(sequence[sequence.len - i])
+  for bit in line:
+    case bit:
+      of '0':
+        result.add(false)
+      of '1':
+        result.add(true)
+      else:
+        raise newException(Exception, "Invalid bit: " & bit)
 
-func mostCommonBits(data: seq[string]): Binary =
+func parseData(data: string): seq[Binary] =
+  data.splitLines.map(parseBinary)
+
+func invert(number: Binary): Binary =
+  number.map(proc (bit: bool): bool = not bit)
+
+func mostCommonBits(numbers: seq[Binary]): Binary =
   var
-    differences: seq[int]
+    counts: seq[int] # Positive count means there are more ones
+  
+  for number in numbers:
+    while counts.len < number.len:
+      counts.add(0)
+    for i, bit in number:
+      if bit:
+        inc counts[i]
+      else:
+        dec counts[i]
 
-  for line in data:
-    if differences.len == 0:
-      differences = newSeq[int](line.len)
-    
-    for i, bit in line:
-      case bit:
-        of '0':
-          dec differences[i]
-        of '1':
-          inc differences[i]
-        else:
-          raise newException(Exception, "Invalid bit: " & bit)
+  func countToBool(count: int): bool =
+    # Positive difference means there are more ones; mapped to true
+    if count < 0:
+      result = false
+    elif count > 0:
+      result = true
+    else:
+      raise newException(Exception, "Equal number of 0s and 1s")
 
-  result = reverse(differences.map(countToBool))
+  result = counts.map(countToBool)
 
-func fromBinary(binary: Binary): int =
+func toDecimal(number: Binary): int =
   var
     total = 0
     place = 1
 
-  for bit in binary:
+  func reverse[T](sequence: seq[T]): seq[T] =
+    result = @[]
+    for i in 1..sequence.len:
+      result.add(sequence[sequence.len - i])
+
+  for bit in reverse(number):
     if bit:
       total += place
     place *= 2
@@ -62,8 +63,6 @@ func fromBinary(binary: Binary): int =
 
 proc partOne*(data: string): int =
   var
-    mostCommon = mostCommonBits(data.splitLines)
-
-  result = fromBinary(mostCommon) * fromBinary(mostCommon.map(
-    proc (bit: bool): bool = not bit
-  ))
+    mostCommon = mostCommonBits(parseData(data))
+    leastCommon = invert(mostCommon)
+  result = mostCommon.toDecimal * leastCommon.toDecimal
