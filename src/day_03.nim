@@ -1,4 +1,16 @@
-import strutils, sequtils
+import strutils, sequtils, parseutils
+
+func parseValues(data: string): seq[int] =
+  # Parse the textual list of binary values to integers
+  var
+    lines = data.splitLines
+    values: seq[int]
+
+  newSeq(values, lines.len)
+  for i, line in lines:
+    discard parseBin(line, values[i])
+
+  result = values
 
 type
   Binary = seq[bool] # Little-endian
