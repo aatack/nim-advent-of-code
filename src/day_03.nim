@@ -62,10 +62,25 @@ func toDecimal(number: Binary): int =
   result = total
 
 func argmax(values: seq[int]): int =
-  0
+  var
+    currentMax = low(int)
+    currentIndex = 0
+
+  for index, value in values:
+    if value > currentMax:
+      currentMax = value
+      currentIndex = index
+
+  return currentIndex
 
 func sharedLeadingBits(number: Binary): (Binary) -> int =
-  result = (b: Binary) => 0
+  func inner(candidate: Binary): int =
+    for i, (left, right) in zip(number, candidate):
+      if left != right:
+        return i
+    return number.len
+
+  result = inner
 
 func partOne*(data: string): int =
   var
