@@ -1,4 +1,4 @@
-import strutils, sequtils
+import strutils, sequtils, sugar
 
 type
   Binary = seq[bool] # Little-endian
@@ -18,7 +18,7 @@ func parseData(data: string): seq[Binary] =
   data.splitLines.map(parseBinary)
 
 func invert(number: Binary): Binary =
-  number.map(proc (bit: bool): bool = not bit)
+  number.map((bit: bool) => not bit)
 
 func mostCommonBits(numbers: seq[Binary]): Binary =
   var
@@ -61,8 +61,25 @@ func toDecimal(number: Binary): int =
 
   result = total
 
-proc partOne*(data: string): int =
+func argmax(values: seq[int]): int =
+  0
+
+func sharedLeadingBits(number: Binary): (Binary) -> int =
+  result = (b: Binary) => 0
+
+func partOne*(data: string): int =
   var
     mostCommon = mostCommonBits(parseData(data))
     leastCommon = invert(mostCommon)
   result = mostCommon.toDecimal * leastCommon.toDecimal
+
+func partTwo*(data: string): int =
+  var
+    numbers = parseData(data)
+    mostCommon = mostCommonBits(numbers)
+    leastCommon = invert(mostCommon)
+
+  result = (
+    toDecimal(numbers[argmax(numbers.map(sharedLeadingBits(mostCommon)))]) *
+    toDecimal(numbers[argmax(numbers.map(sharedLeadingBits(leastCommon)))])
+  )
