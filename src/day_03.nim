@@ -56,6 +56,24 @@ func toDecimal(number: Binary): int =
 
   result = total
 
+func filterNonMatching(
+  numbers: seq[Binary], accumulator: (seq[Binary]) -> Binary
+): Binary =
+  var
+    remaining = numbers
+    accumulated: Binary
+    index = 0
+
+  while remaining.len > 1:
+    accumulated = accumulator(remaining)
+    remaining = remaining.filter(
+      (number) => number[index] == accumulated[index]
+    )
+    inc index
+
+  assert remaining.len == 1
+  return remaining[0]
+
 func partOne*(data: string): int =
   var
     mostCommon = mostCommonBits(parseData(data))
@@ -65,26 +83,8 @@ func partOne*(data: string): int =
 func partTwo*(data: string): int =
   var
     numbers = parseData(data)
-    mostCommonMatches = numbers
-    leastCommonMatches = numbers
-    mostCommon: Binary
-    leastCommon: Binary
-    index = 0
 
-  while mostCommonMatches.len > 1:
-    mostCommon = mostCommonBits(mostCommonMatches)
-    mostCommonMatches = mostCommonMatches.filter(
-      (number) => number[index] == mostCommon[index]
-    )
-    inc index
-
-  index = 0
-
-  while leastCommonMatches.len > 1:
-    leastCommon = mostCommonBits(leastCommonMatches).invert
-    leastCommonMatches = leastCommonMatches.filter(
-      (number) => number[index] == leastCommon[index]
-    )
-    inc index
-
-  return mostCommonMatches[0].toDecimal * leastCommonMatches[0].toDecimal
+  return (
+    filterNonMatching(numbers, mostCommonBits).toDecimal *
+    filterNonMatching(numbers, (n) => mostCommonBits(n).invert).toDecimal
+  )
