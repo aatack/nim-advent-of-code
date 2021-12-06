@@ -24,7 +24,7 @@ proc draw[I](this: Bingo[I], number: int): void =
         if row == I - (column + 1):
           inc this.off_diagonal_hits
 
-proc score[I](this: Bingo[I]): int =
+func score[I](this: Bingo[I]): int =
   # Does not assume the game has been completed
   var
     total = 0
@@ -38,7 +38,7 @@ proc score[I](this: Bingo[I]): int =
 
   return total
 
-proc won[I](this: Bingo[I]): bool =
+func won[I](this: Bingo[I]): bool =
   for value in this.row_hits:
     if value >= I:
       return true
