@@ -1,3 +1,5 @@
+import sugar
+
 type
   Bingo[I: static[int]] = ref object
     # We can store marked numbers as -1 as they are not needed during scoring
@@ -44,3 +46,18 @@ proc won[I](this: Bingo[I]): bool =
     if value >= I:
       return true
   return this.diagonal_hits >= I or this.off_diagonal_hits >= I
+
+func splitWhere[T](sequence: seq[T], where: (T) -> bool): seq[seq[T]] =
+  var
+    segment: seq[T]
+    segments: seq[seq[T]]
+  
+  for value in sequence:
+    if where(value):
+      segments.add(segment)
+      segment = @[]
+    else:
+      segment.add(value)
+
+  segments.add(segment)
+  return segments
