@@ -47,7 +47,7 @@ func won[I](this: Bingo[I]): bool =
       return true
   return this.diagonal_hits >= I or this.off_diagonal_hits >= I
 
-func splitWhere[T](sequence: seq[T], where: (T) -> bool): seq[seq[T]] =
+func splitWhere[T](sequence: seq[T], where: T -> bool): seq[seq[T]] =
   var
     segment: seq[T]
     segments: seq[seq[T]]
