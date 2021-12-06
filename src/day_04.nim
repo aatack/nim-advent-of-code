@@ -20,3 +20,14 @@ proc draw*[I](this: Bingo[I], number: int): void =
           inc this.diagonal_hits
         if row == I - (column + 1):
           inc this.off_diagonal_hits
+
+proc score*[I](this: Bingo[I]): int =
+  # Does not assume the game has been completed
+  var
+    total = 0
+
+  for row in 0..(I - 1):
+    for column in 0..(I - 1):
+      total += this.numbers[row][column]
+
+  return total
