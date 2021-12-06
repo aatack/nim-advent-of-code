@@ -1,18 +1,19 @@
 type
-  Bingo*[I: static[int]] = ref object
-    # Score is calculated by finding the sum of all unmarked numbers; we can
-    # therefore store marked numbers simply as 0, since they will not impact it
-    numbers*: array[I, array[I, int]]
+  Bingo[I: static[int]] = ref object
+    # We can store marked numbers as -1 as they are not needed during scoring
+    numbers: array[I, array[I, int]]
     row_hits: array[I, int]
-    column_hits*: array[I, int]
+    column_hits: array[I, int]
     diagonal_hits: int
     off_diagonal_hits: int
 
-proc draw*[I](this: Bingo[I], number: int): void =
+proc draw[I](this: Bingo[I], number: int): void =
+  assert number >= 0
+
   for row in 0..(I - 1):
     for column in 0..(I - 1):
       if this.numbers[row][column] == number:
-        this.numbers[row][column] = 0
+        this.numbers[row][column] = -1
 
         inc this.row_hits[row]
         inc this.column_hits[column]
@@ -21,13 +22,25 @@ proc draw*[I](this: Bingo[I], number: int): void =
         if row == I - (column + 1):
           inc this.off_diagonal_hits
 
-proc score*[I](this: Bingo[I]): int =
+proc score[I](this: Bingo[I]): int =
   # Does not assume the game has been completed
   var
     total = 0
 
   for row in 0..(I - 1):
     for column in 0..(I - 1):
-      total += this.numbers[row][column]
+      let
+        square = this.numbers[row][column]
+      if square != -1:
+        total += square
 
   return total
+
+proc won[I](this: Bingo[I]): bool =
+  for value in this.row_hits:
+    if value >= I:
+      return true
+  for value in this.column_hits:
+    if value >= I:
+      return true
+  return this.diagonal_hits >= I or this.off_diagonal_hits >= I
