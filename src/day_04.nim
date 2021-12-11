@@ -14,6 +14,14 @@ func parseBoard[I](lines: seq[string]): Bingo[I] =
   assert lines.len == I
   var
     board = Bingo[I]()
+
+  for row, line in lines:
+    var
+      columns = line.splitWhitespace.filter(c => c.len > 0).map(parseInt)
+    assert columns.len == I
+    for column, number in columns:
+      board.numbers[row][column] = number
+
   return board
 
 proc draw[I](this: Bingo[I], number: int): void =
