@@ -87,7 +87,7 @@ func parseData[I](data: string): (seq[int], seq[Bingo[I]]) =
 
   return (draws[0].split(',').map(parseInt), boards.map(parseBoard[I]))
 
-proc partOne*(data: string): int =
+func partOne*(data: string): int =
   let
     (draws, boards) = parseData[5](data)
     
@@ -95,4 +95,6 @@ proc partOne*(data: string): int =
     for board in boards:
       board.draw(number)
       if board.won:
-        return board.score
+        return board.score * number
+
+  raise newException(Exception, "No board won")
