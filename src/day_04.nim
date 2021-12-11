@@ -1,4 +1,5 @@
 import sugar
+import strutils, sequtils
 
 type
   Bingo[I: static[int]] = ref object
@@ -8,6 +9,12 @@ type
     column_hits: array[I, int]
     diagonal_hits: int
     off_diagonal_hits: int
+
+func parseBoard[I](lines: seq[string]): Bingo[I] =
+  assert lines.len == I
+  var
+    board = Bingo[I]()
+  return board
 
 proc draw[I](this: Bingo[I], number: int): void =
   assert number >= 0
@@ -61,3 +68,23 @@ func splitWhere[T](sequence: seq[T], where: T -> bool): seq[seq[T]] =
 
   segments.add(segment)
   return segments
+
+func parseData[I](data: string): (seq[int], seq[Bingo[I]]) =
+  let
+    sections = splitWhere[string](data.splitLines, (l: string) => l.len == 0)
+    draws = sections[0]
+    boards = sections[1..(sections.len - 1)]
+
+  assert draws.len == 1
+
+  return (draws[0].split(',').map(parseInt), boards.map(parseBoard[I]))
+
+proc partOne*(data: string): int =
+  let
+    (draws, boards) = parseData[5](data)
+    
+  for number in draws:
+    for board in boards:
+      board.draw(number)
+      if board.won:
+        return board.score
