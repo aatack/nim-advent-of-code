@@ -87,6 +87,9 @@ func parseData[I](data: string): (seq[int], seq[Bingo[I]]) =
 
   return (draws[0].split(',').map(parseInt), boards.map(parseBoard[I]))
 
+func partition[T](sequence: seq[T], predicate: T -> bool): (seq[T], seq[T]) =
+  return (sequence.filter(predicate), sequence.filter(x => not predicate(x)))
+
 func partOne*(data: string): int =
   let
     (draws, boards) = parseData[5](data)
@@ -98,3 +101,20 @@ func partOne*(data: string): int =
         return board.score * number
 
   raise newException(Exception, "No board won")
+
+func partTwo*(data: string): int =
+  var
+    (draws, boards) = parseData[5](data)
+    final: (int, Bingo[5])
+
+  for number in draws:
+    for board in boards:
+      board.draw(number)
+
+    let
+      (finished, continuing) = partition[Bingo[5]](boards, won)
+    boards = continuing
+    if finished.len > 0:
+      final = (number, finished[0])
+
+  return final[0] * final[1].score
