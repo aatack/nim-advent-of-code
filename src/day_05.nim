@@ -1,3 +1,5 @@
+import strutils, sequtils
+
 type
   Point = object
     x, y: int
@@ -26,3 +28,20 @@ iterator points(line: Line): Point =
       raise newException(
         Exception, "Point iteration for diagonal lines is not implemented"
       )
+
+func parseLine(data: string): Line =
+  let
+    points = data.split(" -> ")
+  
+  assert points.len == 2
+  let
+    start = points[0].split(',')
+    finish = points[1].split(',')
+
+  assert start.len == 2
+  assert finish.len == 2
+
+  return Line(
+    start: Point(x: parseInt(start[0]), y: parseInt(start[1])),
+    finish: Point(x: parseInt(finish[0]), y: parseInt(finish[1])),
+  )
