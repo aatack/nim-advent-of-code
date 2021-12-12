@@ -18,14 +18,15 @@ method direction(this: Line): Direction {.base.} =
 
 iterator coordinates(start, finish: int): int =
   var
-    actualStart = start
-    actualFinish = finish
-  if start > finish:
-    actualStart = finish
-    actualFinish = start
-  
-  for coordinate in actualStart..actualFinish:
-    yield coordinate
+    current = start
+  yield current
+
+  while current != finish:
+    if start < finish:
+      inc current
+    else:
+      dec current
+    yield current
 
 iterator xs(line: Line): int =
   for x in coordinates(line.start.x, line.finish.x):
