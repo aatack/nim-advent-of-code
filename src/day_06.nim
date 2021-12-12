@@ -1,4 +1,4 @@
-import options, sequtils, strutils
+import options, sequtils, strutils, sugar
 
 type
   Lanternfish = ref object
@@ -19,3 +19,8 @@ method loop(this: School) =
   for fish in newborns:
     if fish.isSome:
       this.fish.add(fish.get)
+
+proc parseSchool(data: string): School =
+  return School(
+    fish: data.readLines.map(parseInt).map(i => Lanternfish(days: i))
+  )
