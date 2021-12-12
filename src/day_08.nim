@@ -7,6 +7,19 @@ type
   Display = object
     potential: array[10, Reading]
     displayed: array[4, Reading]
+  MappingGroup = object
+    # Mapping of displayed segments to the actual segments they might represent
+    mapping: array[Segment, set[Segment]]
+
+method specify(
+  this: MappingGroup, displayed: Segment, actual: Segment
+): MappingGroup {.base.} =
+  for segment, options in this.mapping:
+    if segment == displayed:
+      assert actual in options
+      result.mapping[segment] = {actual}
+    else:
+      result.mapping[segment] = options - {actual}
 
 const
   originalReadings = [
@@ -88,3 +101,6 @@ func partOne*(data: string): int =
 proc partTwo*(data: string): int =
   let
     displays = data.splitLines.map(parseDisplay)
+  
+  for display in displays:
+    result += displayToInt(display)
