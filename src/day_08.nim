@@ -11,6 +11,30 @@ type
     # Mapping of displayed segments to the actual segments they might represent
     mapping: array[Segment, set[Segment]]
 
+func bootstrapMapping(display: Display): MappingGroup =
+  let
+    allSegments = {a..g}
+
+  for segment in a..g:
+    result.mapping[segment] = allSegments
+
+  func allowOnly(reading: Reading, allowed: set[Segment]) =
+    for segment in reading:
+      result.mapping[segment] = (
+        result.mapping[segment] - (allSegments - allowed)
+      )
+
+  for reading in display.potential:
+    if reading.len == 2:
+      # We are looking at 1, so can narrow down options to c or f
+      reading.allowOnly({c, f})
+    if reading.len == 3:
+      # We are looking at 1, so can narrow down options to a, c, or f
+      reading.allowOnly({a, c, f})
+    if reading.len == 4:
+      # We are looking at 4, so can narrow down options to b, c, d, or f
+      reading.allowOnly({b, c, d, f})
+
 method specify(
   this: MappingGroup, displayed: Segment, actual: Segment
 ): MappingGroup {.base.} =
