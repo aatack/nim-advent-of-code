@@ -16,13 +16,24 @@ method direction(this: Line): Direction {.base.} =
   else:
     return diagonal
 
+iterator coordinates(start, finish: int): int =
+  var
+    actualStart = start
+    actualFinish = finish
+  if start > finish:
+    actualStart = finish
+    actualFinish = start
+  
+  for coordinate in actualStart..actualFinish:
+    yield coordinate
+
 iterator points(line: Line): Point =
   case line.direction:
     of vertical:
-      for y in line.start.y..line.finish.y:
+      for y in coordinates(line.start.y, line.finish.y):
         yield Point(x: line.start.x, y: y)
     of horizontal:
-      for x in line.start.x..line.finish.x:
+      for x in coordinates(line.start.x, line.finish.x):
         yield Point(x: x, y: line.start.y)
     of diagonal:
       raise newException(
