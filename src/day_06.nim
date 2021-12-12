@@ -6,13 +6,13 @@ type
   School = ref object
     fish: seq[Lanternfish]
 
-method loop(this: Lanternfish): Option[Lanternfish] =
+method loop(this: Lanternfish): Option[Lanternfish] {.base.} =
   dec this.days
   if this.days < 0:
     this.days = 6
     return some(Lanternfish(days: 8))
 
-method loop(this: School) =
+method loop(this: School) {.base.} =
   var
     newborns = this.fish.map(loop)
   
@@ -20,7 +20,15 @@ method loop(this: School) =
     if fish.isSome:
       this.fish.add(fish.get)
 
-proc parseSchool(data: string): School =
+func parseSchool(data: string): School =
   return School(
-    fish: data.readLines.map(parseInt).map(i => Lanternfish(days: i))
+    fish: data.split(',').map(parseInt).map(i => Lanternfish(days: i))
   )
+
+func partOne*(data: string): int =
+  var
+    school = parseSchool(data)
+  
+  for _ in 1..80:
+    school.loop
+  return school.fish.len
