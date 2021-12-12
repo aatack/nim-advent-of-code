@@ -22,10 +22,19 @@ proc parseDisplay(data: string): Display =
   for i, reading in parts[1].splitWhitespace.map(parseReading):
     result.displayed[i] = reading
 
-proc partOne*(data: string): int =
+func partOne*(data: string): int =
+  const
+    allowedLengths = {2, 3, 4, 7}
+
   let
     displays = data.splitLines.map(parseDisplay)
   
-  echo(displays[0])
-  
-  return 0
+  var 
+    count = 0
+
+  for display in displays:
+    for reading in display.displayed:
+      if reading.len in allowedLengths:
+        inc count
+
+  return count
