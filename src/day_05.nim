@@ -45,3 +45,25 @@ func parseLine(data: string): Line =
     start: Point(x: parseInt(start[0]), y: parseInt(start[1])),
     finish: Point(x: parseInt(finish[0]), y: parseInt(finish[1])),
   )
+
+func partOne*(data: string): int =
+  let
+    lines = data.splitLines.map(parseLine)
+
+  # This will be incredibly slow but try anyway
+  var
+    overlaps: array[1000, array[1000, int8]]
+    doubleOverlapCount: int
+
+  for line in lines:
+    if line.direction == diagonal:
+      continue
+    for point in line.points:
+      var
+        current = overlaps[point.x][point.y]
+      if current < high(int8):
+        inc overlaps[point.x][point.y]
+        if current == 1: # Hence it just became two
+          inc doubleOverlapCount
+
+  return doubleOverlapCount
