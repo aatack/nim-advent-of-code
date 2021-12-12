@@ -27,18 +27,29 @@ iterator coordinates(start, finish: int): int =
   for coordinate in actualStart..actualFinish:
     yield coordinate
 
+iterator xs(line: Line): int =
+  for x in coordinates(line.start.x, line.finish.x):
+    yield x
+
+iterator ys(line: Line): int =
+  for y in coordinates(line.start.y, line.finish.y):
+    yield y
+
 iterator points(line: Line): Point =
   case line.direction:
     of vertical:
-      for y in coordinates(line.start.y, line.finish.y):
+      for y in line.ys:
         yield Point(x: line.start.x, y: y)
     of horizontal:
-      for x in coordinates(line.start.x, line.finish.x):
+      for x in line.xs:
         yield Point(x: x, y: line.start.y)
     of diagonal:
-      raise newException(
-        Exception, "Point iteration for diagonal lines is not implemented"
-      )
+      let
+        lineXs = toSeq(line.xs)
+        lineYs = toSeq(line.ys)
+      assert lineXs.len == lineYs.len
+      for (x, y) in zip(lineXs, lineYs):
+        yield Point(x: x, y: y)
 
 func parseLine(data: string): Line =
   let
@@ -69,6 +80,26 @@ func partOne*(data: string): int =
   for line in lines:
     if line.direction == diagonal:
       continue
+    for point in line.points:
+      var
+        current = overlaps[point.x][point.y]
+      if current < high(int8):
+        inc overlaps[point.x][point.y]
+        if current == 1: # Hence it just became two
+          inc doubleOverlapCount
+
+  return doubleOverlapCount
+
+func partTwo*(data: string): int =
+  let
+    lines = data.splitLines.map(parseLine)
+
+  # This will be incredibly slow but try anyway
+  var
+    overlaps: array[1000, array[1000, int8]]
+    doubleOverlapCount: int
+
+  for line in lines:
     for point in line.points:
       var
         current = overlaps[point.x][point.y]
