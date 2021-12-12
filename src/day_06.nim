@@ -10,7 +10,7 @@ type
   School = ref object
     fish: seq[Lanternfish]
   IndexedSchool = ref object
-    fish: array[newbornGestation + 1, int]
+    fish: array[newbornGestation + 1, int64]
 
 method loop(this: Lanternfish): Option[Lanternfish] {.base.} =
   dec this.days
@@ -34,7 +34,7 @@ method loop(this: IndexedSchool) {.base.} =
   this.fish[newbornGestation] = due
   this.fish[normalGestation] += due
 
-method countFish(this: IndexedSchool): int {.base.} =
+method countFish(this: IndexedSchool): int64 {.base.} =
   return this.fish.sum
 
 func parseSchool(data: string): School =
@@ -58,3 +58,11 @@ func partOne*(data: string): int =
   for _ in 1..80:
     school.loop
   return school.fish.len
+
+func partTwo*(data: string): int64 =
+  var
+    school = parseIndexedSchool(data)
+  
+  for _ in 1..256:
+    school.loop
+  return school.countFish
