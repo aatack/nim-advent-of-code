@@ -18,22 +18,24 @@ func bootstrapMapping(display: Display): MappingGroup =
   for segment in a..g:
     result.mapping[segment] = allSegments
 
-  func allowOnly(reading: Reading, allowed: set[Segment]) =
+  func allowOnly(
+    mapping: var MappingGroup, reading: Reading, allowed: set[Segment]
+  ) =
     for segment in reading:
-      result.mapping[segment] = (
-        result.mapping[segment] - (allSegments - allowed)
+      mapping.mapping[segment] = (
+        mapping.mapping[segment] - (allSegments - allowed)
       )
 
   for reading in display.potential:
     if reading.len == 2:
       # We are looking at 1, so can narrow down options to c or f
-      reading.allowOnly({c, f})
+      result.allowOnly(reading, {c, f})
     if reading.len == 3:
       # We are looking at 1, so can narrow down options to a, c, or f
-      reading.allowOnly({a, c, f})
+      result.allowOnly(reading, {a, c, f})
     if reading.len == 4:
       # We are looking at 4, so can narrow down options to b, c, d, or f
-      reading.allowOnly({b, c, d, f})
+      result.allowOnly(reading, {b, c, d, f})
 
 method specify(
   this: MappingGroup, displayed: Segment, actual: Segment
@@ -122,7 +124,7 @@ func partOne*(data: string): int =
 
   return count
 
-proc partTwo*(data: string): int =
+func partTwo*(data: string): int =
   let
     displays = data.splitLines.map(parseDisplay)
   
